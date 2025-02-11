@@ -4,7 +4,7 @@
 RhythmIQ is a music recommendation system that uses Natural Language Processing (NLP), deep learning, and cosine similarity to provide song recommendations based on user queries. The goal of the recommendation system is to enhance music discovery by incorporating deep learning, word embeddings, and numeric feature processing to improve song similarity detection. The model allows users to search for songs or artists and returns recommendations with clickable YouTube links for listening. It is implemented using Python and deployed with Streamlit for an interactive experience.
 
 ## Data
-The dataset was compiled using data from both Spotify and YouTube. Basic song information, such as song name, artist, album, and popularity, was collected from Spotify and stored in CSV files. To enhance the dataset with audio features, the corresponding songs were searched for on YouTube, downloaded, and analyzed using Librosa. This process allowed for the extraction of key audio metadata such as tempo, energy, spectral rolloff, chroma, and danceability. The final dataset contains 3,316 entries and 11 columns, which are:
+The dataset was compiled using data from both Spotify and YouTube. Basic song information, such as song name, artist, album, and popularity, was collected from Spotify and stored in CSV files. To enhance the dataset with audio features, the corresponding songs were searched for on YouTube, downloaded, and analyzed using Librosa. This process allowed for the extraction of key audio metadata such as tempo, energy, spectral rolloff, chroma, and danceability. The final dataset contains 3,310 entries and 11 columns, which are:
 
 - **song_id** – Unique identifier for the song on Spotify
 - **name** – Song title
