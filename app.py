@@ -25,7 +25,7 @@ query = st.text_input("Enter a song title or artist name:").strip().lower()
 song_match = songs_data[songs_data['name_lower'] == query]
 artist_match = songs_data[songs_data['artist_lower'] == query]
 
-# Dynamically show search mode only if an artist is found
+# Show search mode only if an artist is found
 if not artist_match.empty:
     search_type = st.radio("Select Search Mode:", ["Show songs by the artist", "Recommend similar songs"])
 else:
