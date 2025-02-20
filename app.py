@@ -15,8 +15,8 @@ songs_data['artist_lower'] = songs_data['artist'].str.lower()
 
 # Streamlit UI
 st.title("Music Recommender 🎵🎶")
-st.header('Find Songs Similar To Your Favorite Track')
-st.write("Welcome to **RhythmIQ**! Get intelligent song recommendations based on deep learning and cosine similarity.")
+st.write('Welcome to **RhythmIQ**! Find Songs Similar To Your Favorite Track')
+#st.write("Welcome to **RhythmIQ**! Get intelligent song recommendations based on deep learning and cosine similarity.")
 
 # User input
 query = st.text_input("Enter a song title or artist name:").strip().lower()
