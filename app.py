@@ -60,9 +60,10 @@ def recommender(query, search_type, top_n=5):
         if search_type == "Recommend similar songs":
             artist_indices = artist_songs.index.tolist()
             artist_features = combined_features[artist_indices]
+            artist_vector = artist_features.mean(axis=0).reshape(1, -1)
+            predicted_vector = model.predict(artist_vector)
 
-            predicted_vectors = model.predict(artist_features)
-            similarities = cosine_similarity(predicted_vectors, combined_features)
+            similarities = cosine_similarity(predicted_vector, combined_features)
             similar_indices = similarities.argsort(axis=1)[:, -top_n-1:-1]
 
             recommended_songs = []
