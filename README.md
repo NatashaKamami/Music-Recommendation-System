@@ -3,6 +3,11 @@
 ## Overview
 RhythmIQ is a music recommendation system that uses Natural Language Processing (NLP), deep learning, and cosine similarity to provide song recommendations based on user queries. The goal of the recommendation system is to enhance music discovery by incorporating deep learning, word embeddings, and numeric feature processing to improve song similarity detection. The model allows users to search for songs or artists and returns recommendations with clickable YouTube links for listening. It is implemented using Python and deployed with Streamlit for an interactive experience.
 
+## How the system works
+Unlike music streaming platforms where recommendations are based on basic metadata like genre and artist name, my recommendation system makes suggestions based on both textual and numeric features. 
+When a user enters a song title or artist name, the system uses Word2Vec embeddings to convert text into numerical representations, while numerical attributes are normalized and combined with text embeddings to form a comprehensive feature set. 
+A deep learning model then learns patterns and uses cosine similarity, to make relevant song matches. 
+
 ## Data
 The dataset was compiled using data from both Spotify and YouTube. Basic song information, such as song name, artist, album, and popularity, was collected from Spotify and stored in CSV files. To enhance the dataset with audio features, the corresponding songs were searched for on YouTube, downloaded, and analyzed using Librosa. This process allowed for the extraction of key audio metadata such as tempo, energy, spectral rolloff, chroma, and danceability. The final dataset contains 3,310 entries and 11 columns, which are:
 
@@ -23,7 +28,7 @@ The dataset was compiled using data from both Spotify and YouTube. Basic song in
 EDA helped in understanding summary statistics of the numeric features and to explore the relationships, patterns and trends that may exist in the dataset.
 
 ### 2. Handling Text Data
-Since song names, artist names and album titles may contain important information, various Natural Language Processing (NLP) techniques were applied. I used NLTK for text tokenization and for text vectorization, I experimented with multiple text vectorization techniques, including TF-IDF, Word2Vec, Count Vectorization and GloVe to capture relationships and semantic similarities in the text data.
+Since song names, artist names and album titles may contain important information, various Natural Language Processing (NLP) techniques were applied. I used NLTK for text tokenization and for text vectorization, I experimented with multiple text vectorization techniques, including TF-IDF, Word2Vec, Count Vectorization and GloVe to capture relationships and semantic similarities in the text data, but settled on Word2Vec.
 
 ### 3. Feature scaling
 Most of the numeric features had values ranging between 0 and 1, minmax scaling was applied to the numeric columns that contained different scaling so that all the numeric features ranged from 0 to 1.
