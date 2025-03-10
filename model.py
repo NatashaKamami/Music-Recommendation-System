@@ -9,40 +9,59 @@ from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 import nltk
 from nltk.tokenize import word_tokenize
-from gensim.models import Word2Vec
+from gensim.models import FastText
 
 # Load dataset
-songs_data = pd.read_csv("music_data.csv").dropna()
+songs_data = pd.read_csv("new_music_data.csv").dropna()
 
-# Preprocess numeric features
-numeric_features = ['popularity', 'tempo', 'spectral_rolloff']
-unscaled_numeric_features = ['danceability', 'energy', 'chroma']
+# Preprocessing numeric features
+numeric_features = [ 'popularity', 'tempo', 'energy', 'spectral_rolloff', 'chroma', 'danceability',
+       'listeners', 'plays', 'replayability', 'genre_afrobeats',
+       'genre_afrofusion', 'genre_afrohouse', 'genre_afropop',
+       'genre_afroswing', 'genre_alternative', 'genre_amapiano', 'genre_blues',
+       'genre_bongo', 'genre_classic', 'genre_country', 'genre_dance',
+       'genre_dancehall', 'genre_disco', 'genre_drill', 'genre_edm',
+       'genre_electronic', 'genre_folk', 'genre_funk', 'genre_genge',
+       'genre_gengetone', 'genre_gqom', 'genre_grime', 'genre_grunge',
+       'genre_hiphop', 'genre_house', 'genre_indie', 'genre_jazz',
+       'genre_kenyan', 'genre_kenyan drill', 'genre_kenyan hiphop',
+       'genre_kenyan rnb', 'genre_latin', 'genre_metal', 'genre_mugithi',
+       'genre_neosoul', 'genre_pop', 'genre_punk', 'genre_rap', 'genre_reggae',
+       'genre_reggaeton', 'genre_rnb', 'genre_rock', 'genre_singer-songwriter',
+       'genre_soft rock', 'genre_soul', 'genre_synthpop',
+       'genre_tanzanian hiphop', 'genre_trap', 'genre_uk rap']
 
-# Scaling the unscaled numeric features
+# Scale the numeric features
 scaler = MinMaxScaler()
 scaled_features = scaler.fit_transform(songs_data[numeric_features])
-unscaled_features = songs_data[unscaled_numeric_features].values
-
-# Combine all numeric features
-all_numeric_features = np.hstack([scaled_features, unscaled_features])
 
 # Tokenizing text data
 nltk.download('punkt')
 def tokenize_text(text):
     return word_tokenize(str(text).lower())
 
-songs_data['combined_tokens'] = songs_data[['name', 'album', 'artist']].apply(lambda x: sum(map(tokenize_text, x), []), axis=1)
+songs_data['name_tokens'] = songs_data['name'].apply(tokenize_text)
 
-# Train Word2Vec model
-word2vec_model = Word2Vec(songs_data['combined_tokens'], vector_size=100, window=5, min_count=1, workers=4)
 
+# Train FastText model on the tokenized song names
+fasttext_model = FastText(sentences=songs_data['name_tokens'], vector_size=100, window=5, min_count=1, workers=4)
+
+# Get vector representation for each song by averaging token vectors
 def get_song_vector(tokens):
-    vectors = [word2vec_model.wv[token] for token in tokens if token in word2vec_model.wv]
-    return np.mean(vectors, axis=0) if vectors else np.zeros(word2vec_model.vector_size)
+    vectors = [fasttext_model.wv[token] for token in tokens if token in fasttext_model.wv]
+    if vectors:
+        return np.mean(vectors, axis=0)
+    else:
+        return np.zeros(fasttext_model.vector_size)  # Return zero vector if no valid tokens
 
-songs_data['song_vector'] = songs_data['combined_tokens'].apply(get_song_vector)
+# Apply to each song
+songs_data['song_vector'] = songs_data['name_tokens'].apply(get_song_vector)
 song_vectors = np.array(songs_data['song_vector'].tolist())
-combined_features = np.hstack([song_vectors, all_numeric_features])
+
+# Stack text-based and numeric features together
+combined_features = np.hstack([song_vectors, scaled_features])
+combined_features = np.asarray(combined_features, dtype=np.float32)
+
 
 # Train deep learning model
 model = Sequential([

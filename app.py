@@ -17,7 +17,6 @@ songs_data['artist_lower'] = songs_data['artist'].str.lower()
 st.title("Music Recommender 🎵🎶")
 st.write('Welcome to **RhythmIQ**! Find Songs Similar To Your Favorite Track')
 
-
 # User input
 query = st.text_input("Enter a song title or artist name:").strip().lower()
 
@@ -51,27 +50,33 @@ def recommender(query, search_type, top_n=5):
     # Case 2: User entered an artist name
     elif query in songs_data['artist_lower'].values:
         artist_songs = songs_data[songs_data['artist_lower'] == query][['name', 'artist', 'album', 'youtube_url']]
-
+        
         # Show songs by the artist
         if search_type == "Show songs by the artist":
-            return artist_songs.head(5)
+            return artist_songs.head(top_n)
 
-        # Recommend songs similar to the artist style
+        # Recommend songs similar to the artist's style
         if search_type == "Recommend similar songs":
             artist_indices = artist_songs.index.tolist()
             artist_features = combined_features[artist_indices]
+
+            # Compute the average feature vector for the artist
             artist_vector = artist_features.mean(axis=0).reshape(1, -1)
             predicted_vector = model.predict(artist_vector)
 
+            # Compute similarities
             similarities = cosine_similarity(predicted_vector, combined_features)
-            similar_indices = similarities.argsort(axis=1)[:, -top_n-1:-1]
+            similar_indices = similarities.argsort()[0][-(top_n + len(artist_indices)) - 1:-1]  # Get more to filter out artist songs
+            
+            # Get recommended songs
+            recommended_songs = songs_data.iloc[similar_indices][['name', 'artist', 'album', 'youtube_url']]
 
-            recommended_songs = []
-            for idx_list in similar_indices:
-                recommended_songs.extend(songs_data.iloc[idx_list][['name', 'artist', 'album', 'youtube_url']].values)
+            # Remove songs by the same artist
+            recommended_songs = recommended_songs[recommended_songs['artist'].str.lower() != query]
 
-            recommended = pd.DataFrame(recommended_songs, columns=['name', 'artist', 'album', 'youtube_url']).drop_duplicates().head(top_n)
-            return recommended
+            # Ensure we only return top_n unique recommendations
+            return recommended_songs.drop_duplicates().head(top_n)
+
 
 # Display recommendations
 if query:
