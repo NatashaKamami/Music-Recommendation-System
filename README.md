@@ -30,7 +30,15 @@ The dataset was compiled using data from Spotify, YouTube and LastFM. Basic song
 ### 1. Exploratory Data Analysis
 EDA helped in understanding summary statistics of the numeric features and to explore the relationships, patterns and trends that may exist in the dataset.
 
-### 2. Handling Text Data
+### 2. Feature engineering
+To analyze song replayability, a new feature called replayability was created by dividing the play count by the number of unique listeners to indicate how often a song is being replayed by its audience.
+Higher replayability scores suggest that listeners frequently replay the song, indicating strong engagement and popularity, while lower scores imply that a song is played less frequently per listener, potentially reflecting lower listener engagement or appeal.
+
+### 3. Multi-hot encoding
+Since songs can belong to multiple genres, the genre column, which contained lists of genres, was transformed using multi-hot encoding. Each unique genre was converted into a separate binary column, where a value of 1 indicates that the song belongs to the genre, and 0 means it does not.
+This transformation ensures that the dataset properly represents genre information in a format suitable for machine learning models.
+
+### 4. Handling Text Data
 Since song names can provide valuable insights into a song’s theme and vibe, various Natural Language Processing (NLP) techniques were applied.  
 - **Text Tokenization:** I used NLTK to break down song names into individual tokens for further processing.  
 - **Text Vectorization:** To capture relationships and semantic similarities in the text data, I experimented with multiple vectorization techniques, including:  
@@ -41,14 +49,6 @@ Since song names can provide valuable insights into a song’s theme and vibe, v
   - FastText 
 
 After testing these approaches, I settled on FastText because of its ability to capture semantic relationships between words across different languages. This was particularly important since my dataset contained song names in multiple languages, not just English.  
-
-### 3. Feature engineering
-To analyze song replayability, a new feature called replayability was created by dividing the play count by the number of unique listeners to indicate how often a song is being replayed by its audience.
-Higher replayability scores suggest that listeners frequently replay the song, indicating strong engagement and popularity, while lower scores imply that a song is played less frequently per listener, potentially reflecting lower listener engagement or appeal.
-
-### 4. Multi-hot encoding
-Since songs can belong to multiple genres, the genre column, which contained lists of genres, was transformed using multi-hot encoding. Each unique genre was converted into a separate binary column, where a value of 1 indicates that the song belongs to the genre, and 0 means it does not.
-This transformation ensures that the dataset properly represents genre information in a format suitable for machine learning models.
 
 ### 5. Feature scaling
 All the numeric columns in the dataset, contained data in different ranges. In order to ensure consistency across all the numerical features, Min-Max Scaling was applied to standardize the values within the range 0 to 1.
