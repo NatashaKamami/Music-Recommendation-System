@@ -15,7 +15,7 @@ from gensim.models import FastText
 songs_data = pd.read_csv("new_music_data.csv").dropna()
 
 # Preprocessing numeric features
-numeric_features = [ 'popularity', 'tempo', 'energy', 'spectral_rolloff', 'chroma', 'danceability',
+numeric_features = ['tempo', 'energy', 'spectral_rolloff', 'chroma', 'danceability',
        'listeners', 'plays', 'replayability', 'genre_afrobeats',
        'genre_afrofusion', 'genre_afrohouse', 'genre_afropop',
        'genre_afroswing', 'genre_alternative', 'genre_amapiano', 'genre_blues',
