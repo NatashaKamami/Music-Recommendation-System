@@ -24,15 +24,6 @@ query = st.text_input("Enter a song title or artist name:").strip().lower()
 song_match = songs_data[songs_data['name_lower'] == query]
 artist_match = songs_data[songs_data['artist_lower'] == query]
 
-# Handle ambiguous song names
-selected_song = None
-if not song_match.empty and len(song_match) > 1:
-    artist_options = song_match['artist'].unique()
-    selected_artist = st.selectbox("Multiple songs found. Select an artist:", artist_options)
-    selected_song = song_match[song_match['artist'] == selected_artist].iloc[0]
-elif not song_match.empty:
-    selected_song = song_match.iloc[0]
-
 # Show search mode only if an artist is found
 if not artist_match.empty:
     search_type = st.radio("Select Search Mode:", ["Show songs by the artist", "Recommend similar songs"])
