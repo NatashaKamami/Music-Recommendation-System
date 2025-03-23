@@ -24,6 +24,15 @@ query = st.text_input("Enter a song title or artist name:").strip().lower()
 song_match = songs_data[songs_data['name_lower'] == query]
 artist_match = songs_data[songs_data['artist_lower'] == query]
 
+# Handle ambiguous song names
+selected_song = None
+if not song_match.empty and len(song_match) > 1:
+    artist_options = song_match['artist'].unique()
+    selected_artist = st.selectbox("Multiple songs found. Select an artist:", artist_options)
+    selected_song = song_match[song_match['artist'] == selected_artist].iloc[0]
+elif not song_match.empty:
+    selected_song = song_match.iloc[0]
+
 # Show search mode only if an artist is found
 if not artist_match.empty:
     search_type = st.radio("Select Search Mode:", ["Show songs by the artist", "Recommend similar songs"])
@@ -44,7 +53,7 @@ def recommender(query, search_type, top_n=5):
         song_vector = combined_features[song_idx].reshape(1, -1)
         predicted_vector = model.predict(song_vector)
         similarities = cosine_similarity(predicted_vector, combined_features)
-        similar_indices = similarities.argsort()[0][-top_n-1:-1]
+        similar_indices = similarities.argsort()[0][-top_n-1:-1][::-1] # reverse order
         return songs_data.iloc[similar_indices][['name', 'artist', 'album', 'youtube_url']]
 
     # Case 2: User entered an artist name
@@ -66,7 +75,7 @@ def recommender(query, search_type, top_n=5):
 
             # Compute similarities
             similarities = cosine_similarity(predicted_vector, combined_features)
-            similar_indices = similarities.argsort()[0][-(top_n + len(artist_indices)) - 1:-1]  # Get more to filter out artist songs
+            similar_indices = similarities.argsort()[0][-(top_n + len(artist_indices)) - 1:-1][::-1] # Get more to filter out artist songs
             
             # Get recommended songs
             recommended_songs = songs_data.iloc[similar_indices][['name', 'artist', 'album', 'youtube_url']]
