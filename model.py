@@ -16,8 +16,14 @@ songs_data = pd.read_csv("new_music_data.csv").dropna()
 
 # Preprocessing numeric features
 numeric_features = ['tempo', 'energy', 'spectral_rolloff', 'chroma', 'danceability',
-       'listeners', 'plays', 'replayability', 'genre_afrobeats',
-       'genre_afrofusion', 'genre_afrohouse', 'genre_afropop',
+       'listeners', 'plays', 'replayability']
+
+# Scale the numeric features
+scaler = MinMaxScaler()
+scaled_features = scaler.fit_transform(songs_data[numeric_features])
+
+# Define genre features
+genre_features = ['genre_afrobeats', 'genre_afrofusion', 'genre_afrohouse', 'genre_afropop',
        'genre_afroswing', 'genre_alternative', 'genre_amapiano', 'genre_blues',
        'genre_bongo', 'genre_classic', 'genre_country', 'genre_dance',
        'genre_dancehall', 'genre_disco', 'genre_drill', 'genre_edm',
@@ -31,9 +37,8 @@ numeric_features = ['tempo', 'energy', 'spectral_rolloff', 'chroma', 'danceabili
        'genre_soft rock', 'genre_soul', 'genre_synthpop',
        'genre_tanzanian hiphop', 'genre_trap', 'genre_uk rap']
 
-# Scale the numeric features
-scaler = MinMaxScaler()
-scaled_features = scaler.fit_transform(songs_data[numeric_features])
+# Convert genre features to a NumPy array (without scaling)
+genre_array = songs_data[genre_features].values
 
 # Tokenizing text data
 nltk.download('punkt')
@@ -58,8 +63,19 @@ def get_song_vector(tokens):
 songs_data['song_vector'] = songs_data['name_tokens'].apply(get_song_vector)
 song_vectors = np.array(songs_data['song_vector'].tolist())
 
-# Stack text-based and numeric features together
-combined_features = np.hstack([song_vectors, scaled_features])
+
+# Define weights for different feature groups
+genre_weight = 0.5   # Reduce genre influence from overpowering recommendations
+numeric_weight = 1.0 # Keep numeric features unchanged
+text_weight = 1.0    # Keep FastText embeddings unchanged
+
+# Apply weighting
+weighted_genre_features = genre_array * genre_weight
+weighted_numeric_features = scaled_features * numeric_weight
+weighted_text_features = song_vectors * text_weight
+
+# Stack text-based, numeric, and weighted genre features
+combined_features = np.hstack([weighted_text_features, weighted_numeric_features, weighted_genre_features])
 combined_features = np.asarray(combined_features, dtype=np.float32)
 
 
