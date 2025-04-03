@@ -84,6 +84,7 @@ This approach ensures personalized and diverse recommendations, helping users di
 
 ### 9. Running the system on Streamlit
 Streamlit allows users to input either a song name or an artist name and recommendations are given together with direct youtube links to the songs.
+Users can access and use the app using this link: https://fr2wydfpgkzhe7a8ghespw.streamlit.app/ 
 
 ## Future Improvements
 - Expanding the dataset to include more songs.
